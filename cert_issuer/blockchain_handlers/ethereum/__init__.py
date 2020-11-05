@@ -4,7 +4,7 @@ import os
 from cert_core import BlockchainType
 from cert_core import Chain, UnknownChainError
 
-from cert_issuer.certificate_handlers import CertificateBatchHandler, CertificateV2Handler
+from cert_issuer.certificate_handlers import CertificateBatchHandler, CertificateV3Handler
 from cert_issuer.blockchain_handlers.ethereum.connectors import EthereumServiceProviderConnector
 from cert_issuer.blockchain_handlers.ethereum.signer import EthereumSigner
 from cert_issuer.blockchain_handlers.ethereum.transaction_handlers import EthereumTransactionHandler
@@ -54,12 +54,13 @@ def instantiate_blockchain_handlers(app_config):
     chain = app_config.chain
     secret_manager = initialize_signer(app_config)
     certificate_batch_handler = CertificateBatchHandler(secret_manager=secret_manager,
-                                                        certificate_handler=CertificateV2Handler(),
-                                                        merkle_tree=MerkleTreeGenerator())
+                                                        certificate_handler=CertificateV3Handler(),
+                                                        merkle_tree=MerkleTreeGenerator(),
+                                                        config=app_config)
     if chain == Chain.mockchain:
         transaction_handler = MockTransactionHandler()
     # ethereum chains
-    elif chain == Chain.ethereum_mainnet or chain == Chain.ethereum_ropsten:
+    elif chain == Chain.ethereum_mainnet or chain == Chain.ethereum_bloxberg:
         cost_constants = EthereumTransactionCostConstants(app_config.gas_price, app_config.gas_limit)
         connector = EthereumServiceProviderConnector(chain, app_config.api_token)
         transaction_handler = EthereumTransactionHandler(connector, cost_constants, secret_manager,

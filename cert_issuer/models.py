@@ -3,10 +3,11 @@ from abc import abstractmethod
 from cert_issuer.config import ESTIMATE_NUM_INPUTS
 
 class BatchHandler(object):
-    def __init__(self, secret_manager, certificate_handler, merkle_tree):
+    def __init__(self, secret_manager, certificate_handler, merkle_tree, config):
         self.certificate_handler = certificate_handler
         self.secret_manager = secret_manager
         self.merkle_tree = merkle_tree
+        self.config = config
 
     @abstractmethod
     def pre_batch_actions(self, config):
@@ -90,7 +91,7 @@ class TransactionHandler(object):
         pass
 
     @abstractmethod
-    def issue_transaction(self, blockchain_bytes):
+    def issue_transaction(self, recipient_address, token_uri, blockchain_bytes):
         pass
 
 
@@ -98,7 +99,7 @@ class MockTransactionHandler(TransactionHandler):
     def ensure_balance(self):
         pass
 
-    def issue_transaction(self, op_return_bytes):
+    def issue_transaction(self, recipient_address, token_uri, op_return_bytes):
         return 'This has not been issued on a blockchain and is for testing only'
 
 

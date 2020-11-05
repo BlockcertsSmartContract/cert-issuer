@@ -95,12 +95,14 @@ class EtherscanBroadcaster(object):
 
         broadcast_url = self.base_url + '?module=proxy&action=eth_sendRawTransaction'
         if api_token:
-            '&apikey=%s' % api_token
+            broadcast_url += '&apikey=%s' % api_token
         response = requests.post(broadcast_url, data={'hex': tx_hex})
         if 'error' in response.json():
             logging.error("Etherscan returned an error: %s", response.json()['error'])
             raise BroadcastError(response.json()['error'])
         if int(response.status_code) == 200:
+            if response.json().get('message', None) == 'NOTOK':
+                raise BroadcastError(response.json().get('result', None))
             tx_id = response.json().get('result', None)
             logging.info("Transaction ID obtained from broadcast through Etherscan: %s", tx_id)
             return tx_id
@@ -116,9 +118,11 @@ class EtherscanBroadcaster(object):
         broadcast_url += '&address=%s' % address
         broadcast_url += '&tag=latest'
         if api_token:
-            '&apikey=%s' % api_token
+            broadcast_url += '&apikey=%s' % api_token
         response = requests.get(broadcast_url)
         if int(response.status_code) == 200:
+            if response.json().get('message', None) == 'NOTOK':
+                raise BroadcastError(response.json().get('result', None))
             balance = int(response.json().get('result', None))
             logging.info('Balance check succeeded: %s', response.json())
             return balance
@@ -133,10 +137,11 @@ class EtherscanBroadcaster(object):
         broadcast_url += '&address=%s' % address
         broadcast_url += '&tag=latest'
         if api_token:
-            '&apikey=%s' % api_token
+            broadcast_url += '&apikey=%s' % api_token
         response = requests.get(broadcast_url, )
         if int(response.status_code) == 200:
-            # the int(res, 0) transforms the hex nonce to int
+            if response.json().get('message', None) == 'NOTOK':
+                raise BroadcastError(response.json().get('result', None))
             nonce = int(response.json().get('result', None), 0)
             logging.info('Nonce check went correct: %s', response.json())
             return nonce
@@ -219,11 +224,11 @@ eth_provider_list.append(EtherscanBroadcaster('https://api.etherscan.io/api'))
 eth_provider_list.append(MyEtherWalletBroadcaster('https://api.myetherwallet.com/eth'))
 connectors[Chain.ethereum_mainnet] = eth_provider_list
 
-# Configure Ethereum Ropsten testnet connectors
+# Configure Ethereum Bloxberg testnet connectors
 rop_provider_list = []
-rop_provider_list.append(EtherscanBroadcaster('https://ropsten.etherscan.io/api'))
+rop_provider_list.append(EtherscanBroadcaster('https://blockexplorer.bloxberg.org/api'))
 rop_provider_list.append(MyEtherWalletBroadcaster('https://api.myetherwallet.com/rop'))
-connectors[Chain.ethereum_ropsten] = rop_provider_list
+connectors[Chain.ethereum_bloxberg] = rop_provider_list
 
 
 def get_providers_for_chain(chain, local_node=False):

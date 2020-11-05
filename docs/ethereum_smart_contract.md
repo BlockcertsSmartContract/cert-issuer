@@ -62,8 +62,8 @@ Configuration is done via the `conf_eth.ini` file. Cert-deployer's configuration
 `deploying_address = <Your Ethereum address>`  
 The ethereum account's address.
 
-`chain = <ethereum_ropsten|ethereum_mainnet>`  
-Choice of deployment on Ethereum Mainnet or the Ropsten test network.
+`chain = <ethereum_bloxberg|ethereum_mainnet>`  
+Choice of deployment on Ethereum Mainnet or the Bloxberg test network.
 
 `node_url = <ethereum web3 public node url (e.g. infura)>`  
 The web3py library requires an ethereum node that is compatible with the json-rpc interface. The easiest option is to use a public node e.g. infura’s, or connect to a locally-run node such as geth or parity.

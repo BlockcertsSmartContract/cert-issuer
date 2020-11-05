@@ -226,7 +226,7 @@ If you are using a local bitcoin node, you can create addresses by command line.
 
 ### Create an Ethereum issuing address
 
-Currently Blockcerts just supports issuing to the Ropsten Ethereum testnet, and the Ethereum mainnet. In Ethereum a public/private key pair is the same accross all test/main networks.
+Currently Blockcerts just supports issuing to the Bloxberg Ethereum testnet, and the Ethereum mainnet. In Ethereum a public/private key pair is the same accross all test/main networks.
 
  __These steps involve storing secure information on a USB. Do not plug in this USB when your computer's wifi is on.__
  
@@ -268,7 +268,10 @@ Edit your conf.ini file (the config file for this application).
 ```
 issuing_address = <issuing-address>
 
-chain=<bitcoin_regtest|bitcoin_testnet|bitcoin_mainnet|ethereum_ropsten|ethereum_mainnet|mockchain>
+# issuer URL / DID
+verification_method = <verification-method>
+
+chain=<bitcoin_regtest|bitcoin_testnet|bitcoin_mainnet|ethereum_bloxberg|ethereum_mainnet|mockchain>
     
 usb_name = </Volumes/path-to-usb/>
 key_file = <file-you-saved-pk-to>
@@ -301,7 +304,7 @@ python cert-issuer -c conf.ini
   - The Blockchain Certificates will be located in data/blockchain_certificates.
   - If you ran in the mainnet or testnet mode, you can also see your transaction on a live blockchain explorer. 
     - For Bitcoin, Blockr.io has explorers for both [testnet](https://tbtc.blockr.io/) and [mainnet](https://blockr.io/).
-    - For Ethereum, Etherscan has explorers for [ropsten](https://ropsten.etherscan.io/) and [mainnet](https://etherscan.io/)
+    - For Ethereum, Etherscan has explorers for [bloxberg](https://bloxberg.etherscan.io/) and [mainnet](https://etherscan.io/)
     - The transaction id is located in the Blockchain Certificate under `signature.anchors[0].sourceId`
 
 
@@ -400,7 +403,7 @@ For an Ethereum transaction, you'll need to use a different explorer, which migh
 output.  To view a transaction in a web browser, you might try something like this:
 
 - Ethereum Mainnet: https://etherscan.io/tx/0xf537d81667c8011e34e1f450e18fd1c5a8a10c770cd0acdc91a79746696f36a3
-- Ethereum Ropsten (testnet): https://ropsten.etherscan.io/tx/0xf537d81667c8011e34e1f450e18fd1c5a8a10c770cd0acdc91a79746696f36a3
+- Ethereum Bloxberg (testnet): https://bloxberg.etherscan.io/tx/0xf537d81667c8011e34e1f450e18fd1c5a8a10c770cd0acdc91a79746696f36a3
 
 ## Mac scrypt problems
 

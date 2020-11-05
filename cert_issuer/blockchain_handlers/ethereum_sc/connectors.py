@@ -1,7 +1,7 @@
 import json
 import os
 import logging
-from errors import UnableToSignTxError
+from cert_issuer.errors import UnableToSignTxError
 
 from cert_issuer.models import ServiceProviderConnector
 from web3 import Web3, HTTPProvider
@@ -15,6 +15,7 @@ def get_abi(contract):
 
     directory = os.path.dirname(os.path.abspath(__file__))
     path = os.path.join(directory, f"data/{contract}_abi.json")
+    print(path)
 
     with open(path, "r") as f:
         raw = f.read()
@@ -49,13 +50,17 @@ class EthereumSCServiceProviderConnector(ServiceProviderConnector):
 
     def create_transaction(self, method, *argv):
         gas_limit = self.cost_constants.get_gas_limit()
-        estimated_gas = self._contract_obj.functions[method](*argv).estimateGas() * 2
+        estimated_gas = self._contract_obj.functions[method](*argv).estimateGas() * 5
         if estimated_gas > gas_limit:
-            logging.warning("Estimated gas of %s more than gas limit of %s, transaction might fail. Please verify on etherescan.com.", estimated_gas, gas_limit)
+            logging.warning("Estimated gas of %s more than gas limit of %s, transaction might fail. Please verify on blockexplorer.bloxberg.org.", estimated_gas, gas_limit)
             estimated_gas = gas_limit
 
         gas_price = self._w3.eth.gasPrice
         gas_price_limit = self.cost_constants.get_gas_price()
+
+        print("gas price: " + str(gas_price))
+        print("gas_price_limit: " + str(gas_price_limit))
+        print("estimated_gas: " + str(estimated_gas))
 
         if gas_price > gas_price_limit:
             logging.warning("Gas price provided by network of %s higher than gas price of %s set in config, transaction might fail. Please verify on etherescan.com.", gas_price, gas_price_limit)
@@ -63,7 +68,8 @@ class EthereumSCServiceProviderConnector(ServiceProviderConnector):
 
         tx_options = {
             'nonce': self._w3.eth.getTransactionCount(self._w3.eth.defaultAccount),
-            'gas': estimated_gas,
+            'gas': 700000,
+            #'gas': estimated_gas,
             'gasPrice': gas_price
             }
 
@@ -101,3 +107,9 @@ class EthereumSCServiceProviderConnector(ServiceProviderConnector):
 
     def call(self, method, *argv):
         return self._contract_obj.functions[method](*argv).call()
+
+    def get_event_args(self, tx_hash, event):
+        tx_receipt = self._w3.eth.getTransactionReceipt(tx_hash)
+        logs = self._contract_obj.events[event]().processReceipt(tx_receipt)
+        return logs[0]['args']
+

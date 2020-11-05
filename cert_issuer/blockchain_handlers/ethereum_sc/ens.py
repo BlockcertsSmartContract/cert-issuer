@@ -11,8 +11,8 @@ class ENSConnector(object):
         self._w3 = Web3(HTTPProvider())
 
     def get_registry_address(self):
-        if self.app_config.chain == Chain.ethereum_ropsten:
-            addr = self.app_config.ens_registry_ropsten
+        if self.app_config.chain == Chain.ethereum_bloxberg:
+            addr = self.app_config.ens_registry_bloxberg
         else:
             addr = self.app_config.ens_registry_mainnet
 

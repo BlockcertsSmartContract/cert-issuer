@@ -29,11 +29,18 @@ class EthereumSCTransactionHandler(TransactionHandler):
     def revoke_transaction(self, blockchain_bytes, app_config):
         return self.make_transaction(blockchain_bytes, app_config, "revoke_hash")
 
-    def issue_transaction(self, blockchain_bytes, app_config):
-        return self.make_transaction(blockchain_bytes, app_config, "issue_hash")
+    #Outdated Function: TODO - REMOVE
+    #def issue_transaction(self, blockchain_bytes, app_config):
+    #    return self.make_transaction(blockchain_bytes, app_config, "issue_hash")
 
-    def make_transaction(self, blockchain_bytes, app_config, method):
-        prepared_tx = self.connector.create_transaction(method, blockchain_bytes)
+    def issue_transaction(self, recipient_address, token_uri, blockchain_bytes, app_config):
+        return self.make_transaction(app_config, "createCertificate", recipient_address, token_uri, blockchain_bytes)
+
+    def update_token_uri(self, token_id, token_uri, app_config):
+        return self.make_transaction(app_config, "updateTokenURI", token_id, token_uri)
+
+    def make_transaction(self, app_config, method, *argv):
+        prepared_tx = self.connector.create_transaction(method, *argv)
         signed_tx = self.sign_transaction(prepared_tx)
 
         logging.info('Broadcasting transaction to the blockchain...')
@@ -53,3 +60,6 @@ class EthereumSCTransactionHandler(TransactionHandler):
     def broadcast_transaction(self, signed_tx):
         txid = self.connector.broadcast_tx(signed_tx)
         return txid
+
+    def get_event_args(self, tx_hash, event):
+        return self.connector(tx_hash, event)

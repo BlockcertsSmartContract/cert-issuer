@@ -1,7 +1,7 @@
 import logging
 import os
 
-import bitcoin
+#import bitcoin
 import configargparse
 from cert_core import BlockchainType, Chain, chain_to_bitcoin_network, UnknownChainError
 
@@ -38,6 +38,7 @@ def add_arguments(p):
 
     # 'invoked' through config file
     p.add_argument('--issuing_address', required=True, help='issuing address', env_var='ISSUING_ADDRESS')
+    p.add_argument('--verification_method', required=True, help='Verification method for the Linked Data Proof', env_var='VERIFICATION_METHOD')
     p.add_argument('--usb_name', required=True, help='usb path to key_file', env_var='USB_NAME')
     p.add_argument('--key_file', required=True,
                    help='name of file on USB containing private key', env_var='KEY_FILE')
@@ -52,7 +53,7 @@ def add_arguments(p):
     p.add_argument('--max_retry', default=10, type=int, help='Maximum attempts to retry transaction on failure', env_var='MAX_RETRY')
     p.add_argument('--chain', default='bitcoin_regtest',
                    help=('Which chain to use. Default is bitcoin_regtest (which is how the docker container is configured). Other options are '
-                         'bitcoin_testnet bitcoin_mainnet, mockchain, ethereum_mainnet, ethereum_ropsten'), env_var='CHAIN')
+                         'bitcoin_testnet bitcoin_mainnet, mockchain, ethereum_mainnet, ethereum_bloxberg'), env_var='CHAIN')
 
     p.add_argument('--safe_mode', dest='safe_mode', default=True, action='store_true',
                    help='Used to make sure your private key is not plugged in with the wifi.', env_var='SAFE_MODE')
@@ -89,10 +90,10 @@ def add_arguments(p):
                    help='ens_name that points to the smart contract to which to issue', env_var='ENS_NAME')
     p.add_argument('--revocation_list_file', required=False,
                    help='list of certificates or batches to be revokes', env_var='REVOCATION_LIST_FILE')
-    p.add_argument('--ens_registry_ropsten', required=False, default="0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
-                   help='ENS registry address on ropsten', env_var='ENS_RESGISTRY_ROPSTEN')
-    p.add_argument('--ens_registry_mainnet', required=False, default="0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
-                   help='ENS registry address on ropsten', env_var='ENS_RESGISTRY_MAINNET')
+    p.add_argument('--ens_registry_bloxberg', required=False, default="0xde68Fcf6814D81Ee910bf35703622571718E07a7",
+                   help='ENS registry address on bloxberg', env_var='ENS_RESGISTRY_BLOXBERG')
+    p.add_argument('--ens_registry_mainnet', required=False, default="0xde68Fcf6814D81Ee910bf35703622571718E07a7",
+                   help='ENS registry address on bloxberg', env_var='ENS_RESGISTRY_MAINNET')
 
 def get_config():
     configure_logger()
@@ -109,11 +110,12 @@ def get_config():
     parsed_config.chain = Chain.parse_from_chain(parsed_config.chain)
 
     # ensure it's a supported chain
+    """
     if parsed_config.chain.blockchain_type != BlockchainType.bitcoin and \
                     parsed_config.chain.blockchain_type != BlockchainType.ethereum and \
                     parsed_config.chain.blockchain_type != BlockchainType.mock:
         raise UnknownChainError(parsed_config.chain.name)
-
+    """
     logging.info('This run will try to issue on the %s chain', parsed_config.chain.name)
 
     if parsed_config.chain.blockchain_type == BlockchainType.bitcoin:

@@ -4,7 +4,7 @@ venv*/
 virtual\ usb/
 secrets.py
 __pycache__
-
+pk
 certs_dbdump.csv
 
 data/unsigned_certificates/

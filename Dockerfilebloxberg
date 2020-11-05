@@ -1,0 +1,12 @@
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7
+
+EXPOSE 80
+
+COPY ./app /app/app
+COPY ./cert_issuer /app/cert_issuer
+COPY ./sample_data /app/sample_data
+COPY ethereum_smart_contract_requirements.txt .
+COPY conf.ini .
+
+RUN pip install -r ethereum_smart_contract_requirements.txt
+
